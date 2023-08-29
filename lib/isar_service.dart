@@ -1,9 +1,11 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tasks/models/system_settings.dart';
 import 'package:tasks/models/task.dart';
+import 'package:tasks/models/user.dart';
 
 class IsarService {
-  late Future<Isar> db;
+  static late Future<Isar> db;
   IsarService() {
     db = openDB();
   }
@@ -16,7 +18,7 @@ class IsarService {
 
   Future<void> completeTask(int taskId, bool status) async {
     final isar = await db;
-    await isar.writeTxn(() async {
+    await isar.writeTxnSync(() async {
       final task = await isar.tasks.get(taskId);
       task!.completed = status;
       await isar.tasks.put(task);
@@ -25,7 +27,7 @@ class IsarService {
 
   Future<void> deleteTask(int taskId) async {
     final isar = await db;
-    await isar.writeTxn(() => isar.tasks.delete(taskId));
+    await isar.writeTxnSync(() => isar.tasks.delete(taskId));
   }
 
   Future<List<Task>> getAllTasks() async {
@@ -41,9 +43,17 @@ class IsarService {
   Future<Isar> openDB() async {
     if (Isar.instanceNames.isEmpty) {
       final dir = await getApplicationDocumentsDirectory();
-      return await Isar.open([TaskSchema],
+      return await Isar.open([TaskSchema, SystemSettingsSchema, UserSchema],
           directory: dir.path, inspector: true);
     }
     return Future.value(Isar.getInstance());
+  }
+
+  static Future<int> saveServerLink(String serverLink) async {
+    final isar = await db;
+    int id = isar.writeTxnSync(
+      () => isar.systemSettings.putByIndexSync('1', SystemSettings(serverLink)),
+    );
+    return id;
   }
 }
