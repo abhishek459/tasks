@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tasks/isar_service.dart';
-import 'package:tasks/navigation_service.dart';
+import 'package:tasks/configurations/isar_service.dart';
+import 'package:tasks/configurations/navigation_service.dart';
 
 class ServerService {
   static Future<void> fetchServerLink() async {

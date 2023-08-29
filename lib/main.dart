@@ -1,9 +1,9 @@
-import 'package:tasks/navigation_service.dart';
+import 'package:tasks/configurations/navigation_service.dart';
 
-import './server_service.dart';
+import 'configurations/server_service.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:tasks/home_page.dart';
+import 'package:tasks/screens/home/home_page.dart';
 
 void main() async {
   await Isar.initializeIsarCore();

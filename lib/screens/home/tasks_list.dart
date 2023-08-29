@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks/isar_service.dart';
+import 'package:tasks/configurations/isar_service.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/widgets/background_container.dart';
 import 'package:tasks/widgets/glassmorphic_container.dart';
@@ -92,7 +92,9 @@ class TaskTile extends StatelessWidget {
                     task.title,
                   ),
                 ),
-                const MyPadding(heightInPercentage: 0.5,),
+                const MyPadding(
+                  heightInPercentage: 0.5,
+                ),
                 AnimatedDefaultTextStyle(
                   style: task.completed
                       ? const TextStyle(

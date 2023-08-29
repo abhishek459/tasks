@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks/isar_service.dart';
+import 'package:tasks/configurations/isar_service.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/widgets/glassmorphic_container.dart';
 import 'package:tasks/widgets/my_padding.dart';
