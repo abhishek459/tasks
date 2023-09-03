@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tasks/common/common.dart';
 import 'package:tasks/configurations/isar_service.dart';
-import 'package:tasks/configurations/navigation_service.dart';
 
 class ServerService {
   static Future<void> fetchServerLink() async {
@@ -22,11 +21,11 @@ class ServerService {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext!)
-          .showSnackBar(
-              SnackBar(content: Text('Something went wrong: ${e.toString()}')));
+      showErrorSnackBar(e.toString());
     }
   }
 
-  static Future<void> fetchLastModifiedTime() async {}
+  static Future<void> fetchLastModifiedTime() async {
+    print('Saved links');
+  }
 }
