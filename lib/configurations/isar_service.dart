@@ -39,7 +39,7 @@ class IsarService {
 
   Future<void> deleteTask(int taskId) async {
     final isar = await db;
-    await isar.writeTxnSync(() => isar.tasks.delete(taskId));
+    await isar.writeTxn(() => isar.tasks.delete(taskId));
   }
 
   Future<List<Task>> getAllTasks() async {
@@ -72,11 +72,22 @@ class IsarService {
 
   Future<int> saveModifiedTask(Task task) async {
     final isar = await db;
-    final ModifiedTask modifiedTask = ModifiedTask();
-    modifiedTask.task.value = task;
-    final int id =
-        isar.writeTxnSync<int>(() => isar.modifiedTasks.putSync(modifiedTask));
-    return id;
+
+    ModifiedTask? existingModifiedTask = await isar.modifiedTasks
+        .where()
+        .filter()
+        .taskCreatedDateEqualTo(task.createdDate.toIso8601String())
+        .findFirst();
+    if (existingModifiedTask == null) {
+      final ModifiedTask modifiedTask =
+          ModifiedTask(task.createdDate.toIso8601String());
+      modifiedTask.task.value = task;
+      final int id = isar
+          .writeTxnSync<int>(() => isar.modifiedTasks.putSync(modifiedTask));
+      return id;
+    } else {
+      return existingModifiedTask.id;
+    }
   }
 
   Future<Isar> openDB() async {

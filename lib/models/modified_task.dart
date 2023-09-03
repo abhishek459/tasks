@@ -8,7 +8,9 @@ part 'modified_task.g.dart';
 class ModifiedTask {
   Id id = Isar.autoIncrement;
 
+  final String taskCreatedDate;
+
   final task = IsarLink<Task>();
 
-  ModifiedTask();
+  ModifiedTask(this.taskCreatedDate);
 }

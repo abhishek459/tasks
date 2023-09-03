@@ -16,7 +16,13 @@ extension GetModifiedTaskCollection on Isar {
 const ModifiedTaskSchema = CollectionSchema(
   name: r'ModifiedTask',
   id: -8631799481410092684,
-  properties: {},
+  properties: {
+    r'taskCreatedDate': PropertySchema(
+      id: 0,
+      name: r'taskCreatedDate',
+      type: IsarType.string,
+    )
+  },
   estimateSize: _modifiedTaskEstimateSize,
   serialize: _modifiedTaskSerialize,
   deserialize: _modifiedTaskDeserialize,
@@ -44,6 +50,7 @@ int _modifiedTaskEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.taskCreatedDate.length * 3;
   return bytesCount;
 }
 
@@ -52,14 +59,19 @@ void _modifiedTaskSerialize(
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
-) {}
+) {
+  writer.writeString(offsets[0], object.taskCreatedDate);
+}
+
 ModifiedTask _modifiedTaskDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = ModifiedTask();
+  final object = ModifiedTask(
+    reader.readString(offsets[0]),
+  );
   object.id = id;
   return object;
 }
@@ -71,6 +83,8 @@ P _modifiedTaskDeserializeProp<P>(
   Map<Type, List<int>> allOffsets,
 ) {
   switch (propertyId) {
+    case 0:
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -223,6 +237,142 @@ extension ModifiedTaskQueryFilter
       ));
     });
   }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'taskCreatedDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'taskCreatedDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'taskCreatedDate',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taskCreatedDate',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterFilterCondition>
+      taskCreatedDateIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'taskCreatedDate',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension ModifiedTaskQueryObject
@@ -245,7 +395,21 @@ extension ModifiedTaskQueryLinks
 }
 
 extension ModifiedTaskQuerySortBy
-    on QueryBuilder<ModifiedTask, ModifiedTask, QSortBy> {}
+    on QueryBuilder<ModifiedTask, ModifiedTask, QSortBy> {
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterSortBy>
+      sortByTaskCreatedDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskCreatedDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterSortBy>
+      sortByTaskCreatedDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskCreatedDate', Sort.desc);
+    });
+  }
+}
 
 extension ModifiedTaskQuerySortThenBy
     on QueryBuilder<ModifiedTask, ModifiedTask, QSortThenBy> {
@@ -260,16 +424,45 @@ extension ModifiedTaskQuerySortThenBy
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterSortBy>
+      thenByTaskCreatedDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskCreatedDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ModifiedTask, ModifiedTask, QAfterSortBy>
+      thenByTaskCreatedDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskCreatedDate', Sort.desc);
+    });
+  }
 }
 
 extension ModifiedTaskQueryWhereDistinct
-    on QueryBuilder<ModifiedTask, ModifiedTask, QDistinct> {}
+    on QueryBuilder<ModifiedTask, ModifiedTask, QDistinct> {
+  QueryBuilder<ModifiedTask, ModifiedTask, QDistinct> distinctByTaskCreatedDate(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'taskCreatedDate',
+          caseSensitive: caseSensitive);
+    });
+  }
+}
 
 extension ModifiedTaskQueryProperty
     on QueryBuilder<ModifiedTask, ModifiedTask, QQueryProperty> {
   QueryBuilder<ModifiedTask, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<ModifiedTask, String, QQueryOperations>
+      taskCreatedDateProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'taskCreatedDate');
     });
   }
 }
