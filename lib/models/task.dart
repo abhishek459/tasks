@@ -4,7 +4,9 @@ part 'task.g.dart';
 
 @collection
 class Task {
-  Id id = Isar.autoIncrement;
+  Id isarId = Isar.autoIncrement;
+
+  String? mongoId;
 
   String title;
 

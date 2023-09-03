@@ -116,7 +116,7 @@ class TaskTile extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              IsarService().deleteTask(task.id);
+              IsarService().deleteTask(task.isarId);
             },
             icon: const Icon(
               Icons.delete_rounded,
@@ -149,7 +149,7 @@ class _TaskCompletedCheckboxState extends State<TaskCompletedCheckbox> {
       onChanged: (bool? value) {
         setState(() {
           widget.task.completed = !widget.task.completed;
-          IsarService().completeTask(widget.task.id, widget.task.completed);
+          IsarService().completeTask(widget.task.isarId, widget.task.completed);
         });
       },
     );

@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tasks/common/common.dart';
+import 'package:tasks/models/modified_task.dart';
 import 'package:tasks/models/system_settings.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/models/user.dart';
@@ -19,11 +20,21 @@ class IsarService {
 
   Future<void> completeTask(int taskId, bool status) async {
     final isar = await db;
-    await isar.writeTxn(() async {
-      final task = await isar.tasks.get(taskId);
-      task!.completed = status;
-      await isar.tasks.put(task);
-    });
+    late Task? task;
+    try {
+      await isar.writeTxn(() async {
+        task = await isar.tasks.get(taskId);
+        if (task == null) {
+          showErrorSnackBar('Couldn\'t find task for completion');
+          return;
+        }
+        task!.completed = status;
+        taskId = await isar.tasks.put(task!);
+      });
+      saveModifiedTask(task!);
+    } catch (e) {
+      showErrorSnackBar(e.toString());
+    }
   }
 
   Future<void> deleteTask(int taskId) async {
@@ -41,31 +52,47 @@ class IsarService {
     yield* isar.tasks.where().watch(fireImmediately: true);
   }
 
-  Future<Isar> openDB() async {
-    if (Isar.instanceNames.isEmpty) {
-      final dir = await getApplicationDocumentsDirectory();
-      return await Isar.open([TaskSchema, SystemSettingsSchema, UserSchema],
-          directory: dir.path, inspector: true);
-    }
-    return Future.value(Isar.getInstance());
-  }
-
   static Future<bool> saveServerLink(String serverLink) async {
     final isar = await db;
     try {
       final systemSettings = await isar.systemSettings.get(1);
       if (systemSettings != null) {
         systemSettings.serverLink = serverLink;
-        isar.systemSettings.putSync(systemSettings);
+        isar.writeTxnSync(() => isar.systemSettings.putSync(systemSettings));
       } else {
         isar.writeTxnSync(
-          () => isar.systemSettings.putSync(SystemSettings(serverLink)),
-        );
+            () => isar.systemSettings.putSync(SystemSettings(serverLink)));
       }
       return true;
     } catch (e) {
       showErrorSnackBar(e.toString());
       return false;
     }
+  }
+
+  Future<int> saveModifiedTask(Task task) async {
+    final isar = await db;
+    final ModifiedTask modifiedTask = ModifiedTask();
+    modifiedTask.task.value = task;
+    final int id =
+        isar.writeTxnSync<int>(() => isar.modifiedTasks.putSync(modifiedTask));
+    return id;
+  }
+
+  Future<Isar> openDB() async {
+    if (Isar.instanceNames.isEmpty) {
+      final dir = await getApplicationDocumentsDirectory();
+      return await Isar.open(
+        [
+          TaskSchema,
+          SystemSettingsSchema,
+          UserSchema,
+          ModifiedTaskSchema,
+        ],
+        directory: dir.path,
+        inspector: true,
+      );
+    }
+    return Future.value(Isar.getInstance());
   }
 }
