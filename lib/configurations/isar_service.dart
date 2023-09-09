@@ -2,7 +2,6 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tasks/common/common.dart';
 import 'package:tasks/models/modified_task.dart';
-import 'package:tasks/models/system_settings.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/models/user.dart';
 
@@ -52,24 +51,6 @@ class IsarService {
     yield* isar.tasks.where().watch(fireImmediately: true);
   }
 
-  static Future<bool> saveServerLink(String serverLink) async {
-    final isar = await db;
-    try {
-      final systemSettings = await isar.systemSettings.get(1);
-      if (systemSettings != null) {
-        systemSettings.serverLink = serverLink;
-        isar.writeTxnSync(() => isar.systemSettings.putSync(systemSettings));
-      } else {
-        isar.writeTxnSync(
-            () => isar.systemSettings.putSync(SystemSettings(serverLink)));
-      }
-      return true;
-    } catch (e) {
-      showErrorSnackBar(e.toString());
-      return false;
-    }
-  }
-
   Future<int> saveModifiedTask(Task task) async {
     final isar = await db;
 
@@ -96,7 +77,6 @@ class IsarService {
       return await Isar.open(
         [
           TaskSchema,
-          SystemSettingsSchema,
           UserSchema,
           ModifiedTaskSchema,
         ],
