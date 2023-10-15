@@ -74,7 +74,8 @@ class TaskTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnimatedDefaultTextStyle(
+                Text(
+                  task.title,
                   style: task.completed
                       ? const TextStyle(
                           fontWeight: FontWeight.w300,
@@ -86,16 +87,12 @@ class TaskTile extends StatelessWidget {
                           color: Colors.black,
                           decoration: TextDecoration.none,
                         ),
-                  duration: const Duration(milliseconds: 10),
-                  curve: Curves.easeInOutExpo,
-                  child: Text(
-                    task.title,
-                  ),
                 ),
                 const MyPadding(
                   heightInPercentage: 0.5,
                 ),
-                AnimatedDefaultTextStyle(
+                Text(
+                  task.description,
                   style: task.completed
                       ? const TextStyle(
                           color: Colors.black,
@@ -105,11 +102,6 @@ class TaskTile extends StatelessWidget {
                           color: Colors.black,
                           fontWeight: FontWeight.w400,
                         ),
-                  duration: const Duration(milliseconds: 10),
-                  curve: Curves.easeInOutExpo,
-                  child: Text(
-                    task.description,
-                  ),
                 ),
               ],
             ),
