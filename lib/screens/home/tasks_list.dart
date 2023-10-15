@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:tasks/common/common.dart';
 import 'package:tasks/configurations/isar_service.dart';
