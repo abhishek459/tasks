@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tasks/configurations/isar_service.dart';
 import 'package:tasks/models/task.dart';
@@ -5,9 +7,32 @@ import 'package:tasks/widgets/background_container.dart';
 import 'package:tasks/widgets/glassmorphic_container.dart';
 import 'package:tasks/widgets/my_padding.dart';
 
-class TaskList extends StatelessWidget {
-  TaskList({super.key});
+class TaskList extends StatefulWidget {
+  const TaskList({super.key});
+
+  @override
+  State<TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
   final IsarService service = IsarService();
+
+  @override
+  void initState() {
+    super.initState();
+    checkInternetConnection();
+  }
+
+  Future<void> checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // print('connected');
+      }
+    } on SocketException catch (_) {
+      // print('not connected');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

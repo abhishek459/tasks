@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: TaskList(),
+      body: const TaskList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openTaskInputForm(context),
         child: const Icon(Icons.add, size: 28),
