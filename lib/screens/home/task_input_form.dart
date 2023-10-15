@@ -72,10 +72,12 @@ class _TaskInputFormState extends State<TaskInputForm> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () async {
+                  DateTime currentTime = DateTime.now();
                   await _isarService.saveTask(Task(
                     title: titleController.text,
                     description: descriptionController.text,
-                    createdDate: DateTime.now(),
+                    createdDate: currentTime,
+                    modifiedDate: currentTime,
                   ));
                   closeModal();
                 },

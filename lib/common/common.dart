@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasks/configurations/navigation_service.dart';
 
-void showErrorSnackBar(String errorText) {
+void showSnackBar(String snackBarText) {
   ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext!)
-      .showSnackBar(SnackBar(content: Text(errorText)));
+      .showSnackBar(SnackBar(content: Text(snackBarText)));
 }

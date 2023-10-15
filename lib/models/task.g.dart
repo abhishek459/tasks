@@ -32,13 +32,18 @@ const TaskSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'mongoId': PropertySchema(
+    r'modifiedDate': PropertySchema(
       id: 3,
+      name: r'modifiedDate',
+      type: IsarType.dateTime,
+    ),
+    r'mongoId': PropertySchema(
+      id: 4,
       name: r'mongoId',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'title',
       type: IsarType.string,
     )
@@ -83,8 +88,9 @@ void _taskSerialize(
   writer.writeBool(offsets[0], object.completed);
   writer.writeDateTime(offsets[1], object.createdDate);
   writer.writeString(offsets[2], object.description);
-  writer.writeString(offsets[3], object.mongoId);
-  writer.writeString(offsets[4], object.title);
+  writer.writeDateTime(offsets[3], object.modifiedDate);
+  writer.writeString(offsets[4], object.mongoId);
+  writer.writeString(offsets[5], object.title);
 }
 
 Task _taskDeserialize(
@@ -97,10 +103,11 @@ Task _taskDeserialize(
     completed: reader.readBoolOrNull(offsets[0]) ?? false,
     createdDate: reader.readDateTime(offsets[1]),
     description: reader.readString(offsets[2]),
-    title: reader.readString(offsets[4]),
+    modifiedDate: reader.readDateTime(offsets[3]),
+    mongoId: reader.readStringOrNull(offsets[4]),
+    title: reader.readString(offsets[5]),
   );
   object.isarId = id;
-  object.mongoId = reader.readStringOrNull(offsets[3]);
   return object;
 }
 
@@ -118,8 +125,10 @@ P _taskDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -458,6 +467,59 @@ extension TaskQueryFilter on QueryBuilder<Task, Task, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterFilterCondition> modifiedDateEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'modifiedDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> modifiedDateGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'modifiedDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> modifiedDateLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'modifiedDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> modifiedDateBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'modifiedDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterFilterCondition> mongoIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -772,6 +834,18 @@ extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> sortByModifiedDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByModifiedDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedDate', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> sortByMongoId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mongoId', Sort.asc);
@@ -846,6 +920,18 @@ extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> thenByModifiedDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByModifiedDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedDate', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> thenByMongoId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mongoId', Sort.asc);
@@ -891,6 +977,12 @@ extension TaskQueryWhereDistinct on QueryBuilder<Task, Task, QDistinct> {
     });
   }
 
+  QueryBuilder<Task, Task, QDistinct> distinctByModifiedDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'modifiedDate');
+    });
+  }
+
   QueryBuilder<Task, Task, QDistinct> distinctByMongoId(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -928,6 +1020,12 @@ extension TaskQueryProperty on QueryBuilder<Task, Task, QQueryProperty> {
   QueryBuilder<Task, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<Task, DateTime, QQueryOperations> modifiedDateProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'modifiedDate');
     });
   }
 

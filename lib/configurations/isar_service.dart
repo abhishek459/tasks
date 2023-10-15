@@ -11,6 +11,11 @@ class IsarService {
     db = openDB();
   }
 
+  Future<List<Task>> getUnsyncedTasks() async {
+    final isar = await db;
+    return await isar.tasks.filter().mongoIdIsNull().findAll();
+  }
+
   Future<int> saveTask(Task newTask) async {
     final isar = await db;
     final int id = isar.writeTxnSync<int>(() => isar.tasks.putSync(newTask));
@@ -24,7 +29,7 @@ class IsarService {
       await isar.writeTxn(() async {
         task = await isar.tasks.get(taskId);
         if (task == null) {
-          showErrorSnackBar('Couldn\'t find task for completion');
+          showSnackBar('Couldn\'t find task for completion');
           return;
         }
         task!.completed = status;
@@ -32,7 +37,7 @@ class IsarService {
       });
       saveModifiedTask(task!);
     } catch (e) {
-      showErrorSnackBar(e.toString());
+      showSnackBar(e.toString());
     }
   }
 

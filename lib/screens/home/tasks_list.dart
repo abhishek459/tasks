@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
+import 'package:tasks/common/common.dart';
 import 'package:tasks/configurations/isar_service.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/widgets/background_container.dart';
@@ -27,10 +30,24 @@ class _TaskListState extends State<TaskList> {
     try {
       final result = await InternetAddress.lookup('example.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // print('connected');
+        print('connected');
+        List<Task> tasksToBeSynced = await service.getUnsyncedTasks();
+        if (tasksToBeSynced.isNotEmpty) {
+          print('Syncing');
+          final response = await http.post(
+            Uri.parse('https://prime-pelican-singularly.ngrok-free.app/tasks'),
+            body: tasksToBeSynced[0].toJSON(),
+          );
+          print(response.statusCode);
+          print(response.body.toString());
+          if (response.statusCode == 200) {
+            showSnackBar('Synced to database');
+          }
+        }
       }
-    } on SocketException catch (_) {
-      // print('not connected');
+    } on Exception catch (error) {
+      print('error occured');
+      print(error.toString());
     }
   }
 

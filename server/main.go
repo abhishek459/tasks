@@ -22,10 +22,12 @@ type User struct {
 }
 
 type Task struct {
+	IsarId       int       `json:"isarId" bson:"isarId"`
+	MongoId      string    `json:"mongoId" bson:"mongoId"`
 	Title        string    `json:"title" bson:"title"`
 	Description  string    `json:"description" bson:"description"`
 	Completed    bool      `json:"isCompleted" bson:"isCompleted"`
-	LastModified time.Time `json:"lastModified" bson:"lastModified"`
+	LastModified time.Time `json:"modifiedDate" bson:"modifiedDate"`
 	CreatedDate  time.Time `json:"createdDate" bson:"createdDate"`
 }
 
@@ -95,13 +97,16 @@ func createTask(responseWriter http.ResponseWriter, request *http.Request) {
 	var task Task
 	if err := json.NewDecoder(request.Body).Decode(&task); err != nil {
 		http.Error(responseWriter, "Invalid JSON"+err.Error(), http.StatusBadRequest)
+		log.Printf("error decoding sakura response: %v", err)
+		if e, ok := err.(*json.SyntaxError); ok {
+			log.Printf("syntax error at byte offset %d", e.Offset)
+		}
+		log.Printf("sakura response: %q", request.Body)
 		return
 	}
 
 	client = connectToDatabase()
 	collection := client.Database(DATABASE).Collection(COLLECTION)
-	task.CreatedDate = time.Now()
-	task.LastModified = time.Now()
 	result, err := collection.InsertOne(context.TODO(), task)
 	if err != nil {
 		http.Error(responseWriter, "Couldn't insert task :( "+err.Error(), http.StatusInternalServerError)
